@@ -12,7 +12,7 @@ field_name: field_cover_image
 entity_type: node
 bundle: book
 label: 'Cover Image'
-description: ''
+description: "Book's cover image"
 required: true
 translatable: false
 default_value: {  }
