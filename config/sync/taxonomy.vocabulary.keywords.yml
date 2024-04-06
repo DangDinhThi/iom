@@ -1,0 +1,8 @@
+uuid: f516a5c1-f86f-41a3-81d7-ad434b3205ac
+langcode: en
+status: true
+dependencies: {  }
+name: Keywords
+vid: keywords
+description: 'Determine keywords appearing in Book content type'
+weight: 0
