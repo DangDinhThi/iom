@@ -1,0 +1,26 @@
+uuid: 89ca9ccf-0ff0-4874-a6e0-740e3d88ffd9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_content
+    - filter.format.basic_html
+    - filter.format.full_html
+    - node.type.book
+  module:
+    - text
+id: node.book.field_content
+field_name: field_content
+entity_type: node
+bundle: book
+label: Content
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - basic_html
+    - full_html
+field_type: text_long

@@ -1,0 +1,29 @@
+uuid: dc394e2e-de9e-4b22-a883-4b0f97db09c2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_keywords
+    - node.type.book
+    - taxonomy.vocabulary.keywords
+id: node.book.field_keywords
+field_name: field_keywords
+entity_type: node
+bundle: book
+label: Keywords
+description: 'Highlight keywords appearing in the book. Can create new one if not exits. Keywords are separated by commas'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      keywords: keywords
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference
