@@ -1,0 +1,14 @@
+uuid: dc3d3998-a9fc-4fbc-b070-a243193d0508
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.full_editor
+  module:
+    - user
+id: user_add_role_action.full_editor
+label: 'Add the Full Editor role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: full_editor

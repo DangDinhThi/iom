@@ -1,0 +1,14 @@
+uuid: 7086da0f-84b6-4f7d-813f-cce0fd865963
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.full_editor
+  module:
+    - user
+id: user_remove_role_action.full_editor
+label: 'Remove the Full Editor role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: full_editor
