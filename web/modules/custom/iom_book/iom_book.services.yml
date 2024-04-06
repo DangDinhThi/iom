@@ -1,0 +1,4 @@
+services:
+  iom_book.book_helper:
+    class: Drupal\iom_book\BookHelper
+    arguments: ['@current_route_match']

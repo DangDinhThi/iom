@@ -10,7 +10,7 @@ field_name: field_author
 entity_type: node
 bundle: book
 label: Author
-description: 'Book author name'
+description: "Book's author name"
 required: true
 translatable: false
 default_value: {  }

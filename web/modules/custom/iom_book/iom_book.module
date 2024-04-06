@@ -5,7 +5,6 @@
  * Primary module hooks for iom_b�ook module.
  */
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
@@ -15,12 +14,13 @@ use Drupal\views\ViewExecutable;
  */
 function iom_book_preprocess_page_title(&$variables) {
   $route_match = \Drupal::routeMatch();
+
   if ($route_match->getRouteName() === 'entity.node.canonical') {
     $node = $route_match->getParameter('node');
+    /** @var \Drupal\iom_book\BookHelper $book_helper */
+    $book_helper = \Drupal::service('iom_book.book_helper');
+    $variables['title'] = $book_helper->getTitle($node);
 
-    if ($node->bundle() === 'book') {
-      $variables['title'] = _get_book_title_prerender($node);
-    }
   }
 }
 
@@ -30,60 +30,18 @@ function iom_book_preprocess_page_title(&$variables) {
 function iom_book_views_pre_render(ViewExecutable $view) {
   if ($view->id() == "book" && $view->current_display == 'listing_page') {
     foreach($view->result as $value){
-      $value->_entity->set('title', _get_book_title_prerender($value->_entity));
+      /** @var \Drupal\iom_book\BookHelper $book_helper */
+      $book_helper = \Drupal::service('iom_book.book_helper');
+      $value->_entity->set('title', $book_helper->getTitle($value->_entity));
     }
   }
-}
-
-/**
- * Add 3 apostrophes on book title which content contain 'awesome'.
- *
- * @param \Drupal\node\NodeInterface $node
- *   Book Node entity.
- *
- * @return string
- *   Node title after applying the rule.
- *
- */
-function _get_book_title_prerender(NodeInterface $node) {
-  if ($node->bundle() == 'book' &&
-    $node->hasField('field_content') &&
-    !$node->get('field_content')->isEmpty()) {
-    $node_content = $node->get('field_content')->getString();
-    if (str_contains($node_content, 'awesome')) {
-      return $node->getTitle() . '!!!';
-    }
-  }
-  return $node->getTitle();
-
 }
 
 /**
  * Implements hook_ENTITY_TYPE_access().
  */
 function iom_book_node_access(NodeInterface $node, $operation, AccountInterface $account) {
-  $access = AccessResult::neutral();
-  if ($account->isAnonymous() ||
-    $account->hasPermission('administration') ||
-    \Drupal::routeMatch()->getRouteName() !== 'entity.node.canonical') {
-    return $access;
-  }
-  if ($node->bundle()=='book') {
-    if ($node->hasField('field_publication_date') && !$node->get('field_publication_date')->isEmpty()) {
-      $publication_date = $node->get('field_publication_date')->getString();
-      $publication_date_timestamp = new DateTime($publication_date);
-      // Check Publication date is greater than 1 year.
-      if ($publication_date_timestamp->diff(new DateTime())->i >= 1) {
-        // Allow to view book if user has role full_editor.
-        // Even user has other roles.
-        if (in_array('full_editor', $account->getRoles())) {
-          return AccessResult::allowedIf(in_array('full_editor', $account->getRoles()));
-        }
-        // Disallow view book with user has role editor
-        // And doesn't have full_editor role.
-        return AccessResult::forbiddenIf(in_array('editor', $account->getRoles()));
-      }
-    }
-  }
-  return $access;
+  /** @var \Drupal\iom_book\BookHelper $book_helper */
+  $book_helper = \Drupal::service('iom_book.book_helper');
+  $book_helper->bookAccessChecking($node, $account);
 }
