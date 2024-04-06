@@ -1,0 +1,5 @@
+name: 'iom_b�ook'
+type: module
+description: 'Handle Book processing from IOM request'
+package: IOM
+core_version_requirement: ^10 || ^11

@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for iom_b�ook module.
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_preprocess_HOOK() for page title templates.
+ */
+function iom_book_preprocess_page_title(&$variables) {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() === 'entity.node.canonical') {
+    $node = $route_match->getParameter('node');
+
+    if ($node->bundle() === 'book') {
+      $variables['title'] = _get_book_title_prerender($node);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function iom_book_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == "book" && $view->current_display == 'listing_page') {
+    foreach($view->result as $value){
+      $value->_entity->set('title', _get_book_title_prerender($value->_entity));
+    }
+  }
+}
+
+/**
+ * Add 3 apostrophes on book title which content contain 'awesome'.
+ *
+ * @param \Drupal\node\NodeInterface $node
+ *   Book Node entity.
+ *
+ * @return string
+ *   Node title after applying the rule.
+ *
+ */
+function _get_book_title_prerender(NodeInterface $node) {
+  if ($node->bundle() == 'book' &&
+    $node->hasField('field_content') &&
+    !$node->get('field_content')->isEmpty()) {
+    $node_content = $node->get('field_content')->getString();
+    if (str_contains($node_content, 'awesome')) {
+      return $node->getTitle() . '!!!';
+    }
+  }
+  return $node->getTitle();
+
+}
