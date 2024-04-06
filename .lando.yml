@@ -1,0 +1,4 @@
+name: my-awesome-books
+recipe: drupal10
+config:
+  webroot: ./web
