@@ -5,6 +5,8 @@
  * Primary module hooks for iom_b�ook module.
  */
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
 
@@ -54,4 +56,34 @@ function _get_book_title_prerender(NodeInterface $node) {
   }
   return $node->getTitle();
 
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function iom_book_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+  $access = AccessResult::neutral();
+  if ($account->isAnonymous() ||
+    $account->hasPermission('administration') ||
+    \Drupal::routeMatch()->getRouteName() !== 'entity.node.canonical') {
+    return $access;
+  }
+  if ($node->bundle()=='book') {
+    if ($node->hasField('field_publication_date') && !$node->get('field_publication_date')->isEmpty()) {
+      $publication_date = $node->get('field_publication_date')->getString();
+      $publication_date_timestamp = new DateTime($publication_date);
+      // Check Publication date is greater than 1 year.
+      if ($publication_date_timestamp->diff(new DateTime())->i >= 1) {
+        // Allow to view book if user has role full_editor.
+        // Even user has other roles.
+        if (in_array('full_editor', $account->getRoles())) {
+          return AccessResult::allowedIf(in_array('full_editor', $account->getRoles()));
+        }
+        // Disallow view book with user has role editor
+        // And doesn't have full_editor role.
+        return AccessResult::forbiddenIf(in_array('editor', $account->getRoles()));
+      }
+    }
+  }
+  return $access;
 }
